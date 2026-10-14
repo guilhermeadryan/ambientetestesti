@@ -1,0 +1,3 @@
+import {cookie,hashToken,safeWrite,setCookie,authHeaders} from '../../../../lib/auth';import {database} from '../../../../db';
+export const runtime='nodejs';export const dynamic='force-dynamic';
+export async function POST(req:Request){if(!safeWrite(req))return Response.json({error:'Solicitação inválida.'},{status:403,headers:authHeaders});try{const db=await database();await db.query('DELETE FROM hp_sessions WHERE id=$1',[hashToken(cookie(req,'hp_session'))]);return Response.json({ok:true},{headers:{...authHeaders,'Set-Cookie':setCookie('hp_session','',0)}})}catch{return Response.json({error:'Não foi possível sair. Tente novamente.'},{status:503,headers:authHeaders})}}
